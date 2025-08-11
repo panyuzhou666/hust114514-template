@@ -223,7 +223,7 @@
 					\inputminted{cpp}{src/Geometry/半平面交.cpp}
 				\subsection{整数半平面交}
 					\inputminted{cpp}{src/Geometry/integral_hpi.cpp}
-				\subsection{凸包询问：凸包内 切点 交点 最近点}
+				\subsection{凸包询问：凸包内、切点、交点、最近点}
 					\inputminted{cpp}{src/Geometry/convex_findmax.cpp}
 				
 
@@ -246,7 +246,7 @@
 				
 				\subsection{圆}
 					\inputminted[highlightlines={7}]{cpp}{src/Geometry/circle.cpp}
-				\subsection{圆反演 阿波罗尼茨圆}
+				\subsection{圆反演、阿波罗尼茨圆}
 				\begin{small}
 					\input{src/Geometry/阿波罗尼茨圆.tex}
 				\end{small}
@@ -372,6 +372,10 @@
 					\inputminted{cpp}{src/DataStructure/LCT.cpp}
 				\subsection{可持久化 Treap}
 					\inputminted{cpp}{src/DataStructure/可持久化treap-zmc.cpp}
+				\subsection{PBDS 实现平衡树}
+					\texttt{order\_of\_key(k)} 返回集合中有多少个元素严格小于 k。\\
+					\texttt{find\_by\_order(k)} 返回一个指向集合中排名为 k (0-based) 的元素的迭代器。
+					\inputminted{cpp}{src/DataStructure/pbds.cpp}
 				% \subsection{有旋 Treap}
 				% 	\inputminted{cpp}{src/DataStructure/有旋treap.cpp}
 			
@@ -409,7 +413,7 @@
 				%\subsection{双端插入回文树 (zjj)}
 				%\inputminted{cpp}{src/String/PAM_bidirectional.cpp}
 				\subsection{字符串 Hash}
-				\texttt{\input{|"python src/Miscellany/randomprimes.py 3e2 1e6 1e12 1e13 2e13 1e15 1e17 5e17 1e18 2e18"}}
+				%\texttt{\input{|"python src/Miscellany/randomprimes.py 3e2 1e6 1e12 1e13 2e13 1e15 1e17 5e17 1e18 2e18"}}
 				\inputminted{cpp}{src/String/hash.cpp}	
 				\subsection{String Conclusions}
 					\input{src/tbr/string-Conclusions.tex}
@@ -544,7 +548,7 @@
 				\label{randomprimes}
 				\begin{small}
 					\setlength{\parindent}{0em}\setlength{\parskip}{0em}\renewcommand{\baselinestretch}{.8}
-					\texttt{\input{|"python src/Miscellany/randomprimes.py 500 1e3 3e4 1e5 3e5 1e6 2e6 5e6 1e7 2e7 1e9 2e9"}}
+					%\texttt{\input{|"python src/Miscellany/randomprimes.py 500 1e3 3e4 1e5 3e5 1e6 2e6 5e6 1e7 2e7 1e9 2e9"}}
 					\texttt{\textbf{NTT} 976224257 r=3 (20)
 					985661441 r=3 (22)
 					998244353 r=3 (23)\\
