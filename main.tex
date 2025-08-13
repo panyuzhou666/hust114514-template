@@ -37,6 +37,7 @@
 %\setsansfont{Gill Sans Medium}
 
 \setCJKmainfont{Source Han Serif SC}[Scale=0.8]
+
 \setCJKmonofont{SimHei}[Scale=0.8]
 \setCJKsansfont{KaiTi}[Scale=0.8]
 
@@ -59,11 +60,12 @@
 
 %configure the top corners
 \pagestyle{fancy}
+\setlength{\headheight}{14pt}
 \setlength{\headsep}{0.1cm}
 
-\chead{Nemesis}
+\chead{Hust114514}
 \rhead{Page \thepage}
-\lhead{上海交通大学 Shanghai Jiao Tong University}
+\lhead{华中科技大学}
  
 %configure space between the two columns
 \setlength{\columnsep}{13pt}
@@ -279,9 +281,10 @@
 					\inputminted{cpp}{src/Geometry/三维凸包.cpp}
 				\subsection{最小覆盖球}
 					\inputminted{cpp}{src/Geometry/最小覆盖球.cpp}
-				%	\newpage
+					\newpage
 					
 			\section{Tree \& Graph}
+				\input{src/TreeandGraph/tree_properties.tex}
 				\subsection{Hopcroft-Karp $O(\sqrt{V} E)$}
 					\inputminted[highlightlines={5,9}]{cpp}{src/TreeandGraph/hk_skip2004.cpp}
 				\subsection{Hungarian $O(V E / w)$}
@@ -373,8 +376,6 @@
 				\subsection{可持久化 Treap}
 					\inputminted{cpp}{src/DataStructure/可持久化treap-zmc.cpp}
 				\subsection{PBDS 实现平衡树}
-					\texttt{order\_of\_key(k)} 返回集合中有多少个元素严格小于 k。\\
-					\texttt{find\_by\_order(k)} 返回一个指向集合中排名为 k (0-based) 的元素的迭代器。
 					\inputminted{cpp}{src/DataStructure/pbds.cpp}
 				% \subsection{有旋 Treap}
 				% 	\inputminted{cpp}{src/DataStructure/有旋treap.cpp}
