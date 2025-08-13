@@ -1,13 +1,14 @@
-.vscode
-src/_minted-main
-src/*.aux
-src/*.synctex.gz
-src/*.log
-src/*.toc
-*.synctex.gz
-*.aux
-*.toc
-*.log
+# 忽略 VSCode 编辑器配置
+.vscode/
+
+# 忽略 LaTeX 编译过程中的临时文件 (无论在哪个目录下)
+**/*.aux
+**/*.log
+**/*.toc
+**/*.synctex.gz
+**/*.out
+**/*._minted*
+
+# 忽略特定历史文件
 *.un~
 *.cpp~
-src/*.out
