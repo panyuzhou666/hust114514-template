@@ -1,0 +1,28 @@
+\paragraph{核心思想}
+将树的拓扑结构映射成一个数。
+
+\begin{itemize}
+    \item 有根树比较好用的 hash 公式是 $f(p) = \sum_{s \in \text{son}(p)} \text{hash}(f(s)) + C$。
+    \item 其中 \texttt{hash} 函数可以是随机数或者多项式。$C$ 是常数，取 1 就行。
+    \item 这样的 hash 公式利于换根，换根公式也容易推导：
+    \[
+    g(p) = 
+    \begin{cases} 
+        f(p) & \text{p is root} \\ 
+        f(p) + \text{hash}(g(\text{fa}(p)) - \text{hash}(f(p))) & \text{others} 
+    \end{cases}
+    \]
+    \item 有根树的 hash 可以用根节点的 hash 值。
+    \item 无根树的 hash 可以用所有有点作为根节点的 hash 值的异或和作为 hash 值。
+\end{itemize}
+
+\paragraph{复杂度分析}
+\begin{itemize}[leftmargin=*]
+    \item 随机数 hash 使用了 \texttt{map}，复杂度为 $O(n \log n)$。
+\end{itemize}
+
+\paragraph{注意事项}
+\begin{itemize}[leftmargin=*]
+    \item 防止被卡，可以更改 \texttt{hash} 函数，常数 $C$，取模底数（如模 998244353），此时无根树 hash 可以改为所有点 hash 值的加和。
+    \item 使用前记得调用 \texttt{calc(int root = 0)}，否则会 \texttt{assert}。
+\end{itemize}

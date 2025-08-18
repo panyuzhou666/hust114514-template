@@ -285,6 +285,9 @@
 					
 			\section{Tree \& Graph}
 				\input{src/TreeandGraph/tree_properties.tex}
+				\subsection{树哈希}
+					\input{src/TreeandGraph/tree_hash_intro.tex}
+					\inputminted{cpp}{src/TreeandGraph/tree_hash.cpp}
 				\subsection{Hopcroft-Karp $O(\sqrt{V} E)$}
 					\inputminted[highlightlines={5,9}]{cpp}{src/TreeandGraph/hk_skip2004.cpp}
 				\subsection{Hungarian $O(V E / w)$}
@@ -306,8 +309,6 @@
 				\subsection{2-SAT, 强连通分量 / Bitset Kosaraju}
 					\inputminted{cpp}{src/TreeandGraph/2-sat.cpp}
 					\inputminted{cpp}{src/TreeandGraph/kosaraju.cpp}
-				\subsection{Tarjan 点双，边双}
-					\inputminted{cpp}{src/TreeandGraph/Tarjan.cpp}
 				\subsection{边双连通分量}
 					\inputminted{cpp}{src/TreeandGraph/EBCC.cpp}
 				\subsection{点双连通分量}
@@ -374,6 +375,8 @@
 						\inputminted{cpp}{src/DataStructure/非递归线段树求最大值.cpp}
 				\subsection{点分治}
 					\inputminted{cpp}{src/DataStructure/点分治.cpp}
+				\subsection{树上启发式合并}
+					\inputminted{cpp}{src/DataStructure/dsu_on_tree.cpp}
 				% \subsection{KD 树}
 				% 	\inputminted{cpp}{src/DataStructure/KD tree.cpp}
 				\subsection{LCT 动态树}
