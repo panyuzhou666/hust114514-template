@@ -285,9 +285,13 @@
 					
 			\section{Tree \& Graph}
 				\input{src/TreeandGraph/tree_properties.tex}
+				\subsection{树链剖分}
+					\inputminted{cpp}{src/TreeandGraph/HLD.cpp}
 				\subsection{树哈希}
 					\input{src/TreeandGraph/tree_hash_intro.tex}
 					\inputminted{cpp}{src/TreeandGraph/tree_hash.cpp}
+				\subsection{内向基环树}
+					\inputminted{cpp}{src/TreeandGraph/内向基环树.cpp}
 				\subsection{Hopcroft-Karp $O(\sqrt{V} E)$}
 					\inputminted[highlightlines={5,9}]{cpp}{src/TreeandGraph/hk_skip2004.cpp}
 				\subsection{Hungarian $O(V E / w)$}
@@ -302,8 +306,12 @@
 				% 	如果使用 xor hash, 注意相同子树贡献不应该抵消.
 				\subsection{KM 最大权匹配 $O(V^3)$}
 					\inputminted{cpp}{src/TreeandGraph/KM.cpp}
-				\subsection{欧拉回路}
-				\inputminted{cpp}{src/TreeandGraph/欧拉回路.cpp}
+				\subsection{有向图欧拉回路/路径}
+					\begin{itemize}
+						\item \textbf{check 欧拉回路}: 所有点 \texttt{degree\_in = degree\_out}
+						\item \textbf{check 欧拉路径}: 所有点 \texttt{degree\_in = degree\_out}, 或者存在一对点出入度相差 1, 其他点 \texttt{degree\_in = degree\_out}
+					\end{itemize}
+					\inputminted{cpp}{src/TreeandGraph/EulerGraphDir.cpp}
 				%\subsection{Blossom 一般图带权最大匹配 $O(|V|^3)$}
 				%\inputminted{cpp}{src/TreeandGraph/Blossom.cpp}
 				\subsection{2-SAT, 强连通分量 / Bitset Kosaraju}
@@ -320,7 +328,8 @@
 				%\inputminted{cpp}{src/TreeandGraph/MaximumClique.cpp}
 				\subsection{Dinic 最大流}
 					\input{src/yzh/dinic_complexity.tex}
-					\inputminted[highlightlines={8,30}]{cpp}{src/TreeandGraph/Dinic.cpp}
+					\inputminted{cpp}{src/TreeandGraph/Dinic.cpp}
+					\inputminted{cpp}{src/TreeandGraph/jianlyflow.cpp}
 				\subsection{原始对偶费用流}
 					\inputminted[highlightlines={2,3,22,25,28,31,42,43}]{cpp}{src/TreeandGraph/多路增广费用流.cpp}
 				%\subsection{K短路}
@@ -377,6 +386,8 @@
 					\inputminted{cpp}{src/DataStructure/点分治.cpp}
 				\subsection{树上启发式合并}
 					\inputminted{cpp}{src/DataStructure/dsu_on_tree.cpp}
+				\subsection{$O(n \log n) - O(1)\ \text{ LCA}$}
+					\inputminted{cpp}{src/DataStructure/o1lca.cpp}
 				% \subsection{KD 树}
 				% 	\inputminted{cpp}{src/DataStructure/KD tree.cpp}
 				\subsection{LCT 动态树}

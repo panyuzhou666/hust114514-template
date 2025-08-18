@@ -1,43 +1,126 @@
-struct KM {
-int n, nl, nr;
-T g[N][N], lx[N], ly[N], slack[N];
-int mx[N], my[N], visx[N], visy[N], pre[N], q[N], ql, qr;
-int check(int i) {
-	visy[i] = 1;
-	if (~my[i]) {
-		q[qr++] = my[i], visx[my[i]] = 1;
-		return 0; }
-	while (~i) my[i] = pre[i], swap(i, mx[pre[i]]);
-	return 1; }
-void bfs(int s) {
-	ql = 0, qr = 1;
-	q[ql] = s, visx[s] = 1;
-	for (T d; ; ) {
-		while (ql < qr)
-		for (int v = 0, u = q[ql++]; v < n; v++)
-		if (!visy[v] && slack[v] >= (d=lx[u]+ly[v]-g[u][v])) {
-			pre[v] = u;
-			if (d) slack[v] = d; else if (check(v)) return;
-		} d = INF;
-		for (int i = 0; i < n; i++)
-			if (!visy[i]) d = min(d, slack[i]);
-		for (int i = 0; i < n; i++) {
-			if (visy[i]) ly[i] += d; else slack[i] -= d;
-			if (visx[i]) lx[i] -= d; }
-		for (int i = 0; i < n; i++)
-			if (!visy[i] && !slack[i] && check(i)) return;
-	} }
-void solve() {
-	n = max(nl, nr); // always compute a full matching
-	fill(pre, pre + n, -1); 
-	fill(mx, mx + n, -1); fill(my, my + n, -1);
-	fill(ly, ly + n, 0);
-	for (int i = 0; i < n; i++)
-		lx[i] = *max_element(g[i], g[i] + n);
-	for (int i = 0; i < n; i++) {
-		fill(slack, slack + n, INF);
-		fill(visx, visx + n, 0); fill(visy, visy + n, 0);
-		bfs(i); }
-	for (int i = 0; i < n; i++)
-		if (g[i][mx[i]] == 0) mx[i] = -1;
-} } km;
+/*
+此模板要求边权为正。
+传入的邻接矩阵编号从 0 开始。
+如果想求完美匹配，需要给每条边加上足够大的偏移量（ > n * 最大边权 便可）。
+*/
+template <class T>
+struct MaxAssignment {
+   public:
+    T solve(int nx, int ny, std::vector<std::vector<T>> a) {
+        assert(0 <= nx && nx <= ny);
+        assert(int(a.size()) == nx);
+        for (int i = 0; i < nx; ++i) {
+            assert(int(a[i].size()) == ny);
+            for (auto x : a[i]) assert(x >= 0);
+        }
+
+        auto update = [&](int x) {
+            for (int y = 0; y < ny; ++y) {
+                if (lx[x] + ly[y] - a[x][y] < slack[y]) {
+                    slack[y] = lx[x] + ly[y] - a[x][y];
+                    slackx[y] = x;
+                }
+            }
+        };
+
+        costs.resize(nx + 1);
+        costs[0] = 0;
+        lx.assign(nx, std::numeric_limits<T>::max());
+        ly.assign(ny, 0);
+        xy.assign(nx, -1);
+        yx.assign(ny, -1);
+        slackx.resize(ny);
+        for (int cur = 0; cur < nx; ++cur) {
+            std::queue<int> que;
+            visx.assign(nx, false);
+            visy.assign(ny, false);
+            slack.assign(ny, std::numeric_limits<T>::max());
+            p.assign(nx, -1);
+
+            for (int x = 0; x < nx; ++x) {
+                if (xy[x] == -1) {
+                    que.push(x);
+                    visx[x] = true;
+                    update(x);
+                }
+            }
+
+            int ex, ey;
+            bool found = false;
+            while (!found) {
+                while (!que.empty() && !found) {
+                    auto x = que.front();
+                    que.pop();
+                    for (int y = 0; y < ny; ++y) {
+                        if (a[x][y] == lx[x] + ly[y] && !visy[y]) {
+                            if (yx[y] == -1) {
+                                ex = x;
+                                ey = y;
+                                found = true;
+                                break;
+                            }
+                            que.push(yx[y]);
+                            p[yx[y]] = x;
+                            visy[y] = visx[yx[y]] = true;
+                            update(yx[y]);
+                        }
+                    }
+                }
+                if (found) break;
+
+                T delta = std::numeric_limits<T>::max();
+                for (int y = 0; y < ny; ++y)
+                    if (!visy[y]) delta = std::min(delta, slack[y]);
+                for (int x = 0; x < nx; ++x)
+                    if (visx[x]) lx[x] -= delta;
+                for (int y = 0; y < ny; ++y) {
+                    if (visy[y]) {
+                        ly[y] += delta;
+                    } else {
+                        slack[y] -= delta;
+                    }
+                }
+                for (int y = 0; y < ny; ++y) {
+                    if (!visy[y] && slack[y] == 0) {
+                        if (yx[y] == -1) {
+                            ex = slackx[y];
+                            ey = y;
+                            found = true;
+                            break;
+                        }
+                        que.push(yx[y]);
+                        p[yx[y]] = slackx[y];
+                        visy[y] = visx[yx[y]] = true;
+                        update(yx[y]);
+                    }
+                }
+            }
+
+            costs[cur + 1] = costs[cur];
+            for (int x = ex, y = ey, ty; x != -1; x = p[x], y = ty) {
+                costs[cur + 1] += a[x][y];
+                if (xy[x] != -1) costs[cur + 1] -= a[x][xy[x]];
+                ty = xy[x];
+                xy[x] = y;
+                yx[y] = x;
+            }
+        }
+        return costs[nx];
+    }
+
+    // 返回左部点的匹配点
+
+    std::vector<int> assignment() { return xy; }
+
+    // 返回所有顶点的顶标
+    std::pair<std::vector<T>, std::vector<T>> labels() {
+        return std::make_pair(lx, ly);
+    }
+
+    std::vector<T> weights() { return costs; }
+
+   private:
+    std::vector<T> lx, ly, slack, costs;
+    std::vector<int> xy, yx, p, slackx;
+    std::vector<bool> visx, visy;
+};
