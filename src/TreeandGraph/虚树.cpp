@@ -1,19 +1,21 @@
-bool has_root = false; for (int i : q) has_root |= (i == 1);
-if (!has_root) q.push_back(1);
-sort(q.begin(), q.end(), [](int u, int v) {
-	return dfn[u] < dfn[v]; });
-int top = 0;
-for (int x : q) {
-	used.push_back(x);
-	if (top == 0) stk[++top] = x;
-	else { int lca = LCA(stk[top], x); used.push_back(lca);
-		while (top > 1 && dep[lca] < dep[stk[top - 1]]) {
-			h[stk[top - 1]].push_back(stk[top]); --top; }
-		if (dep[lca] < dep[stk[top]])
-			h[lca].push_back(stk[top--]);
-		if (stk[top] != lca) stk[++top] = lca;
-		stk[++top] = x; } }
-while (--top) // assert (top)
-	h[stk[top]].push_back(stk[top + 1]);
-LL ans = solve(1, 0);
-for (auto i : used) h[i].clear();
+int dfn[N];
+int h[N], m, a[N << 1], len;  // 存储关键点
+
+bool cmp(int x, int y) {
+    return dfn[x] < dfn[y];  // 按照 dfs 序排序
+}
+
+void build() {
+    sort(h + 1, h + m + 1, cmp);  // 把关键点按照 dfs 序排序
+    for (int i = 1; i < m; ++i) {
+        a[++len] = h[i];
+        a[++len] = lca(h[i], h[i + 1]);  // 插入 lca
+    }
+    a[++len] = h[m];
+    sort(a + 1, a + len + 1, cmp);  // 把所有虚树上的点按照 dfs 序排序
+    len = unique(a + 1, a + len + 1) - a - 1;  // 去重
+    for (int i = 1, lc; i < len; ++i) {
+        lc = lca(a[i], a[i + 1]);
+        conn(lc, a[i + 1]);  // 连边 lc -> a[i+1]
+    }
+}

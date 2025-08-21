@@ -1,6 +1,32 @@
-bool crt_merge(LL a1, LL m1, LL a2, LL m2, LL &A, LL &M) {
-LL c = a2 - a1, d = __gcd(m1, m2); //合并两个模方程 
-if(c % d) return 0; // gcd(m1, m2) | (a2 - a1)时才有解 
-c = (c % m2 + m2) % m2; c /= d; m1 /= d; m2 /= d;
-c = c * inv(m1 % m2, m2) % m2; //0逆元可任意值
-M = m1*m2*d; A = (c *m1 %M *d %M +a1) % M; return 1;}//有解
+namespace CRT {
+pair<ll, ll> exgcd(ll a, ll b, ll c) {
+    assert(a || b);
+    if (!b) return {c / a, 0};
+    ll d = gcd(a, b);
+    if (c % d) return {-1, -1};
+    ll x = 1, x1 = 0, p = a, q = b, k;
+    b = abs(b);
+    while (b) {
+        k = a / b;
+        x -= k * x1;
+        a -= k * b;
+        swap(x, x1);
+        swap(a, b);
+    }
+    b = abs(q / d);
+    x = x * (c / d) % b;
+    if (x < 0) x += b;
+    return {x, (c - p * x) / q};
+}
+struct Q {
+    ll p, r;  // 0<=r<p
+    Q operator+(const Q &o) const {
+        if (p == 0 || o.p == 0) return {0, 0};
+        auto [x, y] = exgcd(p, -o.p, r - o.r);
+        if (x == -1 && y == -1) return {0, 0};
+        ll q = lcm(p, o.p);
+        return {q, ((r - x * p) % q + q) % q};
+    }
+};
+};  // namespace CRT
+using CRT::Q;
