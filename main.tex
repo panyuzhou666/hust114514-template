@@ -293,13 +293,11 @@
 				\subsection{内向基环树}
 					\inputminted{cpp}{src/TreeandGraph/内向基环树.cpp}
 				\subsection{Hopcroft-Karp $O(\sqrt{V} E)$}
-					\inputminted[highlightlines={5,9}]{cpp}{src/TreeandGraph/hk_skip2004.cpp}
+					\inputminted[highlightlines={13}]{cpp}{src/TreeandGraph/hk_skip2004.cpp}
 				\subsection{Hungarian $O(V E / w)$}
 					\inputminted{cpp}{src/TreeandGraph/Hungarian.cpp}
 				\subsection{Shuffle 一般图最大匹配 $O(V E)$}
 					\inputminted{cpp}{src/TreeandGraph/一般图最大匹配-shuffle.cpp}
-				\subsection{极大团计数}
-					\inputminted{cpp}{src/TreeandGraph/CliqueCount.cpp}
 				% \subsection{有根树同构 Hash}
 				% 	可重集合 Hash, 一个子树要换一种 Hash 做打包.
 				% 	通常 sort rolling hash, 然后 xorshift 打包.
@@ -314,8 +312,9 @@
 					\inputminted{cpp}{src/TreeandGraph/EulerGraphDir.cpp}
 				%\subsection{Blossom 一般图带权最大匹配 $O(|V|^3)$}
 				%\inputminted{cpp}{src/TreeandGraph/Blossom.cpp}
-				\subsection{2-SAT, 强连通分量 / Bitset Kosaraju}
+				\subsection{2-SAT, 强连通分量}
 					\inputminted{cpp}{src/TreeandGraph/2-sat.cpp}
+				\subsection{Bitset Kosaraju}
 					\inputminted{cpp}{src/TreeandGraph/kosaraju.cpp}
 				\subsection{边双连通分量}
 					\inputminted{cpp}{src/TreeandGraph/EBCC.cpp}
@@ -332,6 +331,7 @@
 					\inputminted{cpp}{src/TreeandGraph/jianlyflow.cpp}
 				\subsection{原始对偶费用流}
 					\inputminted[highlightlines={2,3,22,25,28,31,42,43}]{cpp}{src/TreeandGraph/多路增广费用流.cpp}
+					\inputminted{cpp}{src/TreeandGraph/jiangly费用流.cpp}
 				%\subsection{K短路}
 				%\inputminted{cpp}{src/TreeandGraph/K短路.cpp}
 				%\subsection{动态 MST}

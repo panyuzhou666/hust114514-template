@@ -1,24 +1,53 @@
-int stp, sccs, top; // N 开$\text{**两倍**}$
-int dfn[N], low[N], scc[N], stk[N], ans[N];
-void add(int x, int a, int y, int b) { // 注意连边对称
-	E[x << 1 | a].push_back(y << 1 | b); }
-void tarjan(int x) {
-	dfn[x] = low[x] = ++stp;
-	stk[top++] = x;
-	for (auto y : E[x]) {
-		if (!dfn[y]) 
-			tarjan(y), low[x] = min(low[x], low[y]);
-		else if (!scc[y])
-			low[x] = min(low[x], dfn[y]); }
-	if (low[x] == dfn[x]) {
-		sccs++;
-		do scc[stk[--top]] = sccs;
-		while (stk[top] != x); } }
-bool solve() {
-	int cnt = n + n; stp = top = sccs = 0;
-	fill(dfn, dfn + cnt + 1, 0); fill(scc, scc + cnt + 1, 0);
-	for (int i = 0; i < cnt; ++i) if (!dfn[i]) tarjan(i);
-	for (int i = 0; i < n; ++i) {
-		if (scc[i << 1] == scc[i << 1 | 1]) return false;
-		ans[i] = (scc[i << 1 | 1] < scc[i << 1]); }
-	return true; }
+struct TwoSat {
+    int n;
+    vector<vector<int>> e;
+    vector<int> ans;
+    TwoSat(int n) : n(n), e(2 * n), ans(n) {}
+
+    void add(int u, bool f, int v, bool g) {
+        e[2 * u + !f].push_back(2 * v + g);
+        e[2 * v + !g].push_back(2 * u + f);
+    }
+
+    bool work() {
+        vector<int> id(2 * n, -1), dfn(2 * n, -1), low(2 * n, -1);
+        vector<int> stk;
+        int tot = 0, cnt = 0;
+        auto tarjan = [&](auto self, int u) -> void {
+            stk.push_back(u);
+            dfn[u] = low[u] = tot++;
+            for (auto v : e[u]) {
+                if (dfn[v] == -1) {
+                    self(self, v);
+                    low[u] = min(low[u], low[v]);
+                } else if (id[v] == -1) {
+                    low[u] = min(low[u], dfn[v]);
+                }
+            }
+
+            if (dfn[u] == low[u]) {
+                int v;
+                do {
+                    v = stk.back();
+                    stk.pop_back();
+                    id[v] = cnt;
+                } while (v != u);
+                cnt++;
+            }
+        };
+
+        // 改为反向遍历就是字典序最大。
+        for (int i = 0; i < 2 * n; i++) {
+            if (dfn[i] == -1) {
+                tarjan(tarjan, i);
+            }
+        }
+        // 输出字典序最小的可行解。
+        for (int i = 0; i < n; i++) {
+            if (id[2 * i] == id[2 * i + 1]) return 0;
+            ans[i] = id[2 * i] > id[2 * i + 1];
+        }
+        // 如果需要判断某个变量的取值是否唯一,需要判断由0能否到达1之类的,o(n^2)
+        return 1;
+    }
+}
