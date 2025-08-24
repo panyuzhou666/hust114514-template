@@ -1,34 +1,71 @@
-// height[i] = lcp(sa[i], sa[i - 1])
-// 如果有多组数据，全部都清空到 max(n, m)
-constexpr int MAXN = 1000005;
-void get_sa(char *s, int n, int *sa,
-		int *rnk, int *height) { // 1-based
-	static int buc[MAXN], id[MAXN], p[MAXN], t[MAXN];
-	int m = 300;
-	for (int i = 1; i <= n; i++) buc[rnk[i] = s[i]]++;
-	for (int i = 1; i <= m; i++) buc[i] += buc[i - 1];
-	for (int i = n; i; i--) sa[buc[rnk[i]]--] = i;
-	memset(buc, 0, sizeof(int) * (m + 1));
-	for (int k = 1, cnt = 0; cnt != n; k *= 2, m = cnt) {
-		cnt = 0;
-		for (int i = n; i > n - k; i--) id[++cnt] = i;
-		for (int i = 1; i <= n; i++)
-			if (sa[i] > k) id[++cnt] = sa[i] - k;
-		for (int i = 1; i <= n; i++) buc[p[i]=rnk[id[i]]]++;
-		for (int i = 1; i <= m; i++) buc[i] += buc[i - 1];
-		for (int i = n; i; i--) sa[buc[p[i]]--] = id[i];
-		memset(buc, 0, sizeof(int) * (m + 1));
-		memcpy(t, rnk, sizeof(int) * (n + 1));
-		t[n + 1] = 0; // 记得清空 n + 1
-		cnt = 0; for (int i = 1; i <= n; i++) {
-			if (t[sa[i]] != t[sa[i - 1]] ||
-				t[sa[i] + k] != t[sa[i - 1] + k]) cnt++;
-			rnk[sa[i]] = cnt; } }
-	for (int i = 1; i <= n; i++) sa[rnk[i]] = i;
-	for (int i = 1, k = 0; i <= n; i++) { if (k) k--;
-		if (rnk[i] > 1) while (sa[rnk[i] - 1] + k <= n &&
-				s[i + k] == s[sa[rnk[i] - 1] + k]) k++;
-		height[rnk[i]] = k; } } // 两个都要判，否则会左/右越界
-char s[MAXN]; int sa[MAXN], rnk[MAXN], height[MAXN];
-int main() { scanf("%s", s + 1); int n = strlen(s + 1);
-	get_sa(s, n, sa, rnk, height); }
+struct SA {
+    int n;
+    std::vector<int> sa, rk, lc;
+    /*
+    sa[k] = 后缀排名为 k 的后缀起始位置（k = 0..n-1）
+    rk[pos] = 后缀 s[pos..] 的排名（0..n-1）
+    lc[i] = LCP(sa[i], sa[i+1])
+
+    求任意两个后缀的 LCP：LCP(s[a, n], s[b, n])
+    LCP(LCP(s[l], s[l + 1]) ... LCP(s[r - 1], s[r]))
+    min(lc[l] ... lc[r-1]) = rmq(l, r-1)
+
+    */
+    SA(std::string s) {
+        n = s.size();
+        sa.resize(n);
+        lc.resize(n - 1);
+        rk.resize(n);
+        std::iota(sa.begin(), sa.end(), 0);
+        std::sort(sa.begin(), sa.end(),
+                  [&](int a, int b) { return s[a] < s[b]; });
+        rk[sa[0]] = 0;
+        for (int i = 1; i < n; i++) {
+            rk[sa[i]] = rk[sa[i - 1]] + (s[sa[i]] != s[sa[i - 1]]);
+        }
+        int k = 1;
+        std::vector<int> tmp, cnt(n);
+        tmp.reserve(n);
+        while (rk[sa[n - 1]] < n - 1) {
+            tmp.clear();
+            for (int i = 0; i < k; i++) {
+                tmp.push_back(n - k + i);
+            }
+            for (auto i : sa) {
+                if (i >= k) {
+                    tmp.push_back(i - k);
+                }
+            }
+            std::fill(cnt.begin(), cnt.end(), 0);
+            for (int i = 0; i < n; i++) {
+                cnt[rk[i]]++;
+            }
+            for (int i = 1; i < n; i++) {
+                cnt[i] += cnt[i - 1];
+            }
+            for (int i = n - 1; i >= 0; i--) {
+                sa[--cnt[rk[tmp[i]]]] = tmp[i];
+            }
+            std::swap(rk, tmp);
+            rk[sa[0]] = 0;
+            for (int i = 1; i < n; i++) {
+                rk[sa[i]] =
+                    rk[sa[i - 1]] + (tmp[sa[i - 1]] < tmp[sa[i]] ||
+                                     sa[i - 1] + k == n ||
+                                     tmp[sa[i - 1] + k] < tmp[sa[i] + k]);
+            }
+            k *= 2;
+        }
+        for (int i = 0, j = 0; i < n; i++) {
+            if (rk[i] == 0) {
+                j = 0;
+            } else {
+                for (j -= j > 0; i + j < n && sa[rk[i] - 1] + j < n &&
+                                 s[i + j] == s[sa[rk[i] - 1] + j];) {
+                    j++;
+                }
+                lc[rk[i] - 1] = j;
+            }
+        }
+    }
+};
