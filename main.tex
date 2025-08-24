@@ -443,10 +443,13 @@
 				%\subsection{Total LCS 子串对目标求 LCS}
 				%\inputminted{cpp}{src/String/Total LCS.cpp}
 				\subsection{广义在线 SAM}
-				\inputminted{cpp}{src/String/generalizedSAM.cpp}
-				\subsection{回文树}
-					0 的子树是长为偶数的串, 1 的子树是长为奇数的. 0 代表空串, 1 没有意义.
+					\inputminted{cpp}{src/String/generalizedSAM.cpp}
+				\subsection{回文自动机}
+					1 的子树是长为偶数的串, 0 的子树是长为奇数的. 1 代表空串, 0 没有意义.
 					\inputminted{cpp}{src/String/PAM.cpp}
+				\subsection{回文自动机 + dp}
+					使用slink指针优化dp.
+					\inputminted{cpp}{src/String/PAM_slink.cpp}
 				\subsection{Runs}
 					\inputminted{cpp}{src/String/Runs.cpp}
 				%\subsection{双端插入回文树 (zjj)}
