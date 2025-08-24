@@ -1,0 +1,31 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{SAM}\PYG{p}{\PYGZob{}}
+\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{tot}\PYG{p}{,}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{MM}\PYG{p}{],}\PYG{n}{len}\PYG{p}{[}\PYG{n}{MM}\PYG{p}{],}\PYG{n}{t}\PYG{p}{[}\PYG{n}{MM}\PYG{p}{][}\PYG{l+m+mi}{26}\PYG{p}{];}
+\PYG{n}{SAM}\PYG{p}{()\PYGZob{}}\PYG{n}{tot}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{;\PYGZcb{}}
+\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{insert}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{,}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{last}\PYG{p}{)\PYGZob{}}
+\PYG{+w}{	}\PYG{k}{if}\PYG{p}{(}\PYG{n}{t}\PYG{p}{[}\PYG{n}{last}\PYG{p}{][}\PYG{n}{c}\PYG{p}{])\PYGZob{}}
+\PYG{+w}{		}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{p}\PYG{o}{=}\PYG{n}{last}\PYG{p}{,}\PYG{n}{q}\PYG{o}{=}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{][}\PYG{n}{c}\PYG{p}{];}
+\PYG{+w}{		}\PYG{k}{if}\PYG{p}{(}\PYG{n}{len}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{o}{==}\PYG{n}{len}\PYG{p}{[}\PYG{n}{q}\PYG{p}{])}\PYG{k}{return}\PYG{+w}{ }\PYG{n}{q}\PYG{p}{;}
+\PYG{+w}{		}\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{nq}\PYG{o}{=++}\PYG{n}{tot}\PYG{p}{;}
+\PYG{+w}{			}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{nq}\PYG{p}{]}\PYG{o}{=}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{q}\PYG{p}{];}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{q}\PYG{p}{]}\PYG{o}{=}\PYG{n}{nq}\PYG{p}{;}
+\PYG{+w}{			}\PYG{n}{len}\PYG{p}{[}\PYG{n}{nq}\PYG{p}{]}\PYG{o}{=}\PYG{n}{len}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{;}\PYG{n}{memcpy}\PYG{p}{(}\PYG{n}{t}\PYG{p}{[}\PYG{n}{nq}\PYG{p}{],}\PYG{n}{t}\PYG{p}{[}\PYG{n}{q}\PYG{p}{],}\PYG{k}{sizeof}\PYG{p}{(}\PYG{n}{t}\PYG{p}{[}\PYG{n}{q}\PYG{p}{]));}
+\PYG{+w}{			}\PYG{k}{for}\PYG{p}{(;}\PYG{n}{p}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{][}\PYG{n}{c}\PYG{p}{]}\PYG{o}{==}\PYG{n}{q}\PYG{p}{;}\PYG{n}{p}\PYG{o}{=}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{p}\PYG{p}{])}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{][}\PYG{n}{c}\PYG{p}{]}\PYG{o}{=}\PYG{n}{nq}\PYG{p}{;}
+\PYG{+w}{			}\PYG{c+c1}{//可以直接复制下面的代码。}
+\PYG{+w}{			}\PYG{k}{return}\PYG{+w}{ }\PYG{n}{nq}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{	}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{p}\PYG{o}{=}\PYG{n}{last}\PYG{p}{,}\PYG{n}{np}\PYG{o}{=++}\PYG{n}{tot}\PYG{p}{;}
+\PYG{+w}{	}\PYG{n}{len}\PYG{p}{[}\PYG{n}{np}\PYG{p}{]}\PYG{o}{=}\PYG{n}{len}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{	}\PYG{k}{for}\PYG{p}{(;}\PYG{n}{p}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{o}{!}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{][}\PYG{n}{c}\PYG{p}{];}\PYG{n}{p}\PYG{o}{=}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{p}\PYG{p}{])}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{][}\PYG{n}{c}\PYG{p}{]}\PYG{o}{=}\PYG{n}{np}\PYG{p}{;}
+\PYG{+w}{	}\PYG{k}{if}\PYG{p}{(}\PYG{o}{!}\PYG{n}{p}\PYG{p}{)}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{np}\PYG{p}{]}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{	}\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{		}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{q}\PYG{o}{=}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{][}\PYG{n}{c}\PYG{p}{];}
+\PYG{+w}{		}\PYG{k}{if}\PYG{p}{(}\PYG{n}{len}\PYG{p}{[}\PYG{n}{q}\PYG{p}{]}\PYG{o}{==}\PYG{n}{len}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{np}\PYG{p}{]}\PYG{o}{=}\PYG{n}{q}\PYG{p}{;}
+\PYG{+w}{		}\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{nq}\PYG{o}{=++}\PYG{n}{tot}\PYG{p}{;}
+\PYG{+w}{			}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{nq}\PYG{p}{]}\PYG{o}{=}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{q}\PYG{p}{];}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{q}\PYG{p}{]}\PYG{o}{=}\PYG{n}{nq}\PYG{p}{;}
+\PYG{+w}{			}\PYG{n}{len}\PYG{p}{[}\PYG{n}{nq}\PYG{p}{]}\PYG{o}{=}\PYG{n}{len}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{;}\PYG{n}{memcpy}\PYG{p}{(}\PYG{n}{t}\PYG{p}{[}\PYG{n}{nq}\PYG{p}{],}\PYG{n}{t}\PYG{p}{[}\PYG{n}{q}\PYG{p}{],}\PYG{k}{sizeof}\PYG{p}{(}\PYG{n}{t}\PYG{p}{[}\PYG{n}{q}\PYG{p}{]));}
+\PYG{+w}{			}\PYG{k}{for}\PYG{p}{(;}\PYG{n}{p}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{][}\PYG{n}{c}\PYG{p}{]}\PYG{o}{==}\PYG{n}{q}\PYG{p}{;}\PYG{n}{p}\PYG{o}{=}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{p}\PYG{p}{])}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{][}\PYG{n}{c}\PYG{p}{]}\PYG{o}{=}\PYG{n}{nq}\PYG{p}{;}
+\PYG{+w}{			}\PYG{n}{fail}\PYG{p}{[}\PYG{n}{np}\PYG{p}{]}\PYG{o}{=}\PYG{n}{nq}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{	}\PYG{k}{return}\PYG{+w}{ }\PYG{n}{np}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{n}{sam}\PYG{p}{;}
+\PYG{c+c1}{// scanf(\PYGZdq{}\PYGZpc{}s\PYGZdq{},st+1);int slen=strlen(st+1);}
+\PYG{c+c1}{// int last=1;}
+\PYG{c+c1}{// for(int j=1;j\PYGZlt{}=slen;j++)last=sam.insert(st[j]\PYGZhy{}\PYGZsq{}a\PYGZsq{},last);}
+\end{Verbatim}

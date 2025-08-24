@@ -1,0 +1,36 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{Runs}\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{l}\PYG{p}{,}\PYG{n}{r}\PYG{p}{,}\PYG{n}{p}\PYG{p}{;}
+\PYG{p}{\PYGZcb{};}\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{Runs}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{run}\PYG{p}{;}
+\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{k}{operator}\PYG{o}{==}\PYG{p}{(}\PYG{n}{Runs}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{,}\PYG{n}{Runs}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{)\PYGZob{}}\PYG{k}{return}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{.}\PYG{n}{l}\PYG{o}{==}\PYG{n}{y}\PYG{p}{.}\PYG{n}{l}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{.}\PYG{n}{r}\PYG{o}{==}\PYG{n}{y}\PYG{p}{.}\PYG{n}{r}\PYG{p}{;\PYGZcb{}}
+\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{gl}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{,}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{);}\PYG{+w}{ }\PYG{c+c1}{// 求 $S[1,x],S[1,y]$ 的最长公共后缀}
+\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n+nf}{gr}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{,}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{);}\PYG{+w}{ }\PYG{c+c1}{// 求 $S[x,n],S[y,n]$ 的最长公共前缀}
+\PYG{c+c1}{//上面两个可以用 二分 + Hash 或者后缀数组实现。}
+\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n+nf}{getcmp}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{,}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{)\PYGZob{}}\PYG{c+c1}{//S[x,n]\PYGZlt{}S[y,n]}
+\PYG{+w}{	}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{len}\PYG{o}{=}\PYG{n}{gr}\PYG{p}{(}\PYG{n}{x}\PYG{p}{,}\PYG{n}{y}\PYG{p}{);}
+\PYG{+w}{	}\PYG{k}{return}\PYG{+w}{ }\PYG{n}{st}\PYG{p}{[}\PYG{n}{x}\PYG{o}{+}\PYG{n}{len}\PYG{p}{]}\PYG{o}{\PYGZlt{}}\PYG{n}{st}\PYG{p}{[}\PYG{n}{y}\PYG{o}{+}\PYG{n}{len}\PYG{p}{];\PYGZcb{}}
+\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{ly}\PYG{p}{[}\PYG{n}{N}\PYG{p}{];}
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n+nf}{lyndon}\PYG{p}{(}\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n}{type}\PYG{p}{)\PYGZob{}}\PYG{c+c1}{//后缀排序法求 Lyndon}
+\PYG{+w}{	}\PYG{n}{stack}\PYG{o}{\PYGZlt{}}\PYG{n}{PII}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{stk}\PYG{p}{;}\PYG{n}{stk}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(\PYGZob{}}\PYG{n}{n}\PYG{p}{,}\PYG{n}{n}\PYG{p}{\PYGZcb{});}\PYG{n}{ly}\PYG{p}{[}\PYG{n}{n}\PYG{p}{]}\PYG{o}{=}\PYG{n}{n}\PYG{p}{;}
+\PYG{+w}{	}\PYG{k}{for}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{i}\PYG{o}{=}\PYG{n}{n}\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{;}\PYG{n}{i}\PYG{o}{\PYGZgt{}=}\PYG{l+m+mi}{1}\PYG{p}{;}\PYG{n}{i}\PYG{o}{\PYGZhy{}\PYGZhy{}}\PYG{p}{)\PYGZob{}}
+\PYG{+w}{		}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{now}\PYG{o}{=}\PYG{n}{i}\PYG{p}{;}
+\PYG{+w}{		}\PYG{k}{while}\PYG{p}{(}\PYG{o}{!}\PYG{n}{stk}\PYG{p}{.}\PYG{n}{empty}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{n}{getcmp}\PYG{p}{(}\PYG{n}{i}\PYG{p}{,}\PYG{n}{stk}\PYG{p}{.}\PYG{n}{top}\PYG{p}{().}\PYG{n}{first}\PYG{p}{)}\PYG{o}{!=}\PYG{n}{type}\PYG{p}{)}
+\PYG{+w}{			}\PYG{n}{now}\PYG{o}{=}\PYG{n}{stk}\PYG{p}{.}\PYG{n}{top}\PYG{p}{().}\PYG{n}{second}\PYG{p}{,}\PYG{n}{stk}\PYG{p}{.}\PYG{n}{pop}\PYG{p}{();}
+\PYG{+w}{		}\PYG{n}{ly}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]}\PYG{o}{=}\PYG{n}{now}\PYG{p}{;}
+\PYG{+w}{		}\PYG{n}{stk}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(\PYGZob{}}\PYG{n}{i}\PYG{p}{,}\PYG{n}{now}\PYG{p}{\PYGZcb{});}
+\PYG{+w}{	}\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n+nf}{getrun}\PYG{p}{()\PYGZob{}}
+\PYG{+w}{	}\PYG{k}{for}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{l}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{;}\PYG{n}{l}\PYG{o}{\PYGZlt{}=}\PYG{n}{n}\PYG{p}{;}\PYG{n}{l}\PYG{o}{++}\PYG{p}{)\PYGZob{}}
+\PYG{+w}{		}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{r}\PYG{o}{=}\PYG{n}{ly}\PYG{p}{[}\PYG{n}{l}\PYG{p}{],}\PYG{n}{ll}\PYG{o}{=}\PYG{n}{l}\PYG{p}{,}\PYG{n}{rr}\PYG{o}{=}\PYG{n}{r}\PYG{p}{;}
+\PYG{+w}{		}\PYG{k}{if}\PYG{p}{(}\PYG{n}{l}\PYG{o}{!=}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{n}{ll}\PYG{o}{\PYGZhy{}=}\PYG{n}{gl}\PYG{p}{(}\PYG{n}{l}\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{,}\PYG{n}{r}\PYG{p}{);}
+\PYG{+w}{		}\PYG{k}{if}\PYG{p}{(}\PYG{n}{r}\PYG{o}{!=}\PYG{n}{n}\PYG{p}{)}\PYG{n}{rr}\PYG{o}{+=}\PYG{n}{gr}\PYG{p}{(}\PYG{n}{l}\PYG{p}{,}\PYG{n}{r}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{);}
+\PYG{+w}{		}\PYG{k}{if}\PYG{p}{(}\PYG{n}{rr}\PYG{o}{\PYGZhy{}}\PYG{n}{ll}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{o}{\PYGZgt{}=}\PYG{l+m+mi}{2}\PYG{o}{*}\PYG{p}{(}\PYG{n}{r}\PYG{o}{\PYGZhy{}}\PYG{n}{l}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{))}\PYG{n}{run}\PYG{p}{.}\PYG{n}{push\PYGZus{}back}\PYG{p}{(\PYGZob{}}\PYG{n}{ll}\PYG{p}{,}\PYG{n}{rr}\PYG{p}{,}\PYG{n}{r}\PYG{o}{\PYGZhy{}}\PYG{n}{l}\PYG{o}{+}\PYG{l+m+mi}{1}\PYG{p}{\PYGZcb{});}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n+nf}{solve}\PYG{p}{()\PYGZob{}}
+\PYG{+w}{	}\PYG{n}{st}\PYG{p}{[}\PYG{n}{n}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}\PYGZbs{}0\PYGZsq{}}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{run}\PYG{p}{.}\PYG{n}{clear}\PYG{p}{();}
+\PYG{+w}{	}\PYG{n}{init}\PYG{p}{();}\PYG{c+c1}{//Hash 或者 SA 的启动}
+\PYG{+w}{	}\PYG{k}{for}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{op}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{n}{op}\PYG{o}{\PYGZlt{}=}\PYG{l+m+mi}{1}\PYG{p}{;}\PYG{n}{op}\PYG{o}{++}\PYG{p}{)\PYGZob{}}\PYG{c+c1}{//0正常字典序,1反序}
+\PYG{+w}{		}\PYG{n}{lyndon}\PYG{p}{(}\PYG{n}{op}\PYG{p}{);}\PYG{+w}{ }\PYG{n}{getrun}\PYG{p}{();}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{	}\PYG{n}{sort}\PYG{p}{(}\PYG{n}{run}\PYG{p}{.}\PYG{n}{begin}\PYG{p}{(),}\PYG{n}{run}\PYG{p}{.}\PYG{n}{end}\PYG{p}{(),[](}\PYG{n}{Runs}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Runs}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{)\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{x}\PYG{+w}{ }\PYG{o}{==}\PYG{+w}{ }\PYG{n}{y}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{.}\PYG{n}{p}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{.}\PYG{n}{p}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{x}\PYG{p}{.}\PYG{n}{l}\PYG{+w}{ }\PYG{o}{!=}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{.}\PYG{n}{l}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{.}\PYG{n}{l}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{.}\PYG{n}{l}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{.}\PYG{n}{r}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{.}\PYG{n}{r}\PYG{p}{);\PYGZcb{});}
+\PYG{+w}{	}\PYG{n}{run}\PYG{p}{.}\PYG{n}{erase}\PYG{p}{(}\PYG{n}{unique}\PYG{p}{(}\PYG{n}{run}\PYG{p}{.}\PYG{n}{begin}\PYG{p}{(),}\PYG{n}{run}\PYG{p}{.}\PYG{n}{end}\PYG{p}{()),}\PYG{n}{run}\PYG{p}{.}\PYG{n}{end}\PYG{p}{());}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

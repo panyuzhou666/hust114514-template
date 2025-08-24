@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+source \PYGZdl{}VIMRUNTIME/mswin.\PYG{k}{vim}
+behave mswin
+\PYG{k}{set} \PYG{n+nb}{mouse}\PYG{p}{=}\PYG{k}{a} \PYG{n+nb}{ci} \PYG{n+nb}{ai} \PYG{k}{si} \PYG{k}{nu} \PYG{k}{ts}\PYG{p}{=}\PYG{l+m}{4} \PYG{k}{sw}\PYG{p}{=}\PYG{l+m}{4} \PYG{k}{is} \PYG{n+nb}{hls} \PYG{n+nb}{backup} \PYG{n+nb}{undofile}
+\PYG{k}{color} slate
+map \PYG{p}{\PYGZlt{}}F7\PYG{p}{\PYGZgt{}} : \PYG{p}{!} \PYG{k}{make} \PYGZpc{}\PYG{p}{\PYGZlt{}\PYGZlt{}}CR\PYG{p}{\PYGZgt{}}
+map \PYG{p}{\PYGZlt{}}F8\PYG{p}{\PYGZgt{}} : \PYG{p}{!} time ./\PYGZpc{}\PYG{p}{\PYGZlt{}} \PYG{p}{\PYGZlt{}}CR\PYG{p}{\PYGZgt{}}
+\end{Verbatim}

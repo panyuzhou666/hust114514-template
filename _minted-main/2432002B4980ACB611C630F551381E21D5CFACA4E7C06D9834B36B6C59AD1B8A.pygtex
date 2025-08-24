@@ -1,0 +1,133 @@
+\begin{Verbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{k}{using}\PYG{+w}{ }\PYG{n}{ull}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k+kt}{unsigned}\PYG{+w}{ }\PYG{k+kt}{long}\PYG{+w}{ }\PYG{k+kt}{long}\PYG{p}{;}
+
+\PYG{c+cm}{/**}
+\PYG{c+cm}{ * @brief 树哈希类}
+\PYG{c+cm}{ *}
+\PYG{c+cm}{ * 用于计算有根树和无根树的哈希值。}
+\PYG{c+cm}{ * 核心思想是通过 DFS 和换根 DP}
+\PYG{c+cm}{ * 来为每个节点的子树以及以每个节点为根的整棵树生成一个唯一的哈希值。}
+\PYG{c+cm}{ */}
+\PYG{k}{class}\PYG{+w}{ }\PYG{n+nc}{tree\PYGZus{}hash}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{   }\PYG{k}{private}\PYG{o}{:}
+\PYG{+w}{    }\PYG{c+c1}{// 静态成员，用于在类的所有实例中共享}
+\PYG{+w}{    }\PYG{k}{static}\PYG{+w}{ }\PYG{n}{map}\PYG{o}{\PYGZlt{}}\PYG{n}{ull}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ull}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{mp}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 哈希值映射，确保相同的子树结构得到相同的随机值}
+\PYG{+w}{    }\PYG{k}{static}\PYG{+w}{ }\PYG{n}{mt19937\PYGZus{}64}\PYG{+w}{ }\PYG{n}{rng}\PYG{p}{;}\PYG{+w}{    }\PYG{c+c1}{// 64位梅森旋转算法随机数生成器}
+
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{n}\PYG{p}{;}\PYG{+w}{                  }\PYG{c+c1}{// 树的节点数}
+\PYG{+w}{    }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{n}{g}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 邻接表表示的树}
+\PYG{+w}{    }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{ull}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{dp}\PYG{p}{;}\PYG{+w}{         }\PYG{c+c1}{// dp[i] 存储以 i 为根的子树的哈希值}
+\PYG{+w}{    }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{ull}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{rdp}\PYG{p}{;}\PYG{+w}{        }\PYG{c+c1}{// rdp[i] 存储以 i 为整棵树的根时的哈希值}
+\PYG{+w}{    }\PYG{n}{ull}\PYG{+w}{ }\PYG{n}{hash\PYGZus{}val}\PYG{p}{;}\PYG{+w}{           }\PYG{c+c1}{// 整棵树的无根哈希值}
+\PYG{+w}{    }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n}{calced}\PYG{p}{;}\PYG{+w}{            }\PYG{c+c1}{// 标记是否已执行计算}
+
+\PYG{+w}{   }\PYG{k}{public}\PYG{o}{:}
+\PYG{+w}{    }\PYG{c+cm}{/**}
+\PYG{c+cm}{     * @brief 构造函数}
+\PYG{c+cm}{     * @param ng 描述树结构的邻接表}
+\PYG{c+cm}{     */}
+\PYG{+w}{    }\PYG{n}{tree\PYGZus{}hash}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}\PYGZgt{}\PYGZam{}}\PYG{+w}{ }\PYG{n}{ng}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{n}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ng}\PYG{p}{.}\PYG{n}{size}\PYG{p}{();}
+\PYG{+w}{        }\PYG{n}{g}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ng}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{dp}\PYG{p}{.}\PYG{n}{resize}\PYG{p}{(}\PYG{n}{n}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{);}
+\PYG{+w}{        }\PYG{n}{rdp}\PYG{p}{.}\PYG{n}{resize}\PYG{p}{(}\PYG{n}{n}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{);}
+\PYG{+w}{        }\PYG{n}{hash\PYGZus{}val}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{calced}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{false}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{   }\PYG{k}{private}\PYG{o}{:}
+\PYG{+w}{    }\PYG{c+cm}{/**}
+\PYG{c+cm}{     * @brief 为一个子树哈希值生成一个唯一的随机映射值}
+\PYG{c+cm}{     *}
+\PYG{c+cm}{     * 使用 map 来记忆化，确保对于相同的输入 x，总是返回相同的随机数。}
+\PYG{c+cm}{     * 这是为了保证同构的子树贡献的哈希值是相同的。}
+\PYG{c+cm}{     * @param x 子树的哈希值}
+\PYG{c+cm}{     * @return 映射后的唯一哈希值}
+\PYG{c+cm}{     */}
+\PYG{+w}{    }\PYG{k}{static}\PYG{+w}{ }\PYG{n}{ull}\PYG{+w}{ }\PYG{n}{get}\PYG{p}{(}\PYG{n}{ull}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{mp}\PYG{p}{.}\PYG{n}{count}\PYG{p}{(}\PYG{n}{x}\PYG{p}{))}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{mp}\PYG{p}{[}\PYG{n}{x}\PYG{p}{];}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{mp}\PYG{p}{[}\PYG{n}{x}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{rng}\PYG{p}{();}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+cm}{/**}
+\PYG{c+cm}{     * @brief 第一次 DFS，计算每个节点的子树哈希值}
+\PYG{c+cm}{     * @param p 当前节点}
+\PYG{c+cm}{     * @param fa 父节点}
+\PYG{c+cm}{     */}
+\PYG{+w}{    }\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{dfs}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{fa}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{dp}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 初始值，可以看作是节点自身的贡献}
+\PYG{+w}{        }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{auto}\PYG{+w}{ }\PYG{n}{s}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{g}\PYG{p}{[}\PYG{n}{p}\PYG{p}{])}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{s}\PYG{+w}{ }\PYG{o}{!=}\PYG{+w}{ }\PYG{n}{fa}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{dfs}\PYG{p}{(}\PYG{n}{s}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{);}
+\PYG{+w}{                }\PYG{c+c1}{// 将所有子节点的子树哈希值通过 get() 映射后累加}
+\PYG{+w}{                }\PYG{n}{dp}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{+=}\PYG{+w}{ }\PYG{n}{get}\PYG{p}{(}\PYG{n}{dp}\PYG{p}{[}\PYG{n}{s}\PYG{p}{]);}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+cm}{/**}
+\PYG{c+cm}{     * @brief 第二次 DFS（换根 DP），计算以每个节点为根时整棵树的哈希值}
+\PYG{c+cm}{     * @param p 当前节点}
+\PYG{c+cm}{     * @param fa 父节点}
+\PYG{c+cm}{     */}
+\PYG{+w}{    }\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{rdfs}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{fa}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{fa}\PYG{+w}{ }\PYG{o}{==}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{c+c1}{// 如果是根节点，其换根哈希值就是它的子树哈希值}
+\PYG{+w}{            }\PYG{n}{rdp}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{dp}\PYG{p}{[}\PYG{n}{p}\PYG{p}{];}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}\PYG{+w}{ }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{c+c1}{// 否则，它的换根哈希值 = 它的子树哈希值 + 从父节点那边传来的哈希值}
+\PYG{+w}{            }\PYG{c+c1}{// 父节点传来的值 = (父节点的换根哈希值 \PYGZhy{} 当前子树对父节点的贡献)}
+\PYG{+w}{            }\PYG{n}{ull}\PYG{+w}{ }\PYG{n}{parent\PYGZus{}contribution}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{rdp}\PYG{p}{[}\PYG{n}{fa}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{get}\PYG{p}{(}\PYG{n}{dp}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]);}
+\PYG{+w}{            }\PYG{n}{rdp}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{dp}\PYG{p}{[}\PYG{n}{p}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{get}\PYG{p}{(}\PYG{n}{parent\PYGZus{}contribution}\PYG{p}{);}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{auto}\PYG{+w}{ }\PYG{n}{s}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{g}\PYG{p}{[}\PYG{n}{p}\PYG{p}{])}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{s}\PYG{+w}{ }\PYG{o}{!=}\PYG{+w}{ }\PYG{n}{fa}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{rdfs}\PYG{p}{(}\PYG{n}{s}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{);}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{   }\PYG{k}{public}\PYG{o}{:}
+\PYG{+w}{    }\PYG{c+cm}{/**}
+\PYG{c+cm}{     * @brief 执行计算}
+\PYG{c+cm}{     * @param root 任意指定的根节点，默认为 0}
+\PYG{c+cm}{     */}
+\PYG{+w}{    }\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{calc}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{root}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{dfs}\PYG{p}{(}\PYG{n}{root}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{);}
+\PYG{+w}{        }\PYG{n}{rdfs}\PYG{p}{(}\PYG{n}{root}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{);}
+
+\PYG{+w}{        }\PYG{c+c1}{// 计算无根树哈希值，通常用所有节点的有根哈希值的异或和}
+\PYG{+w}{        }\PYG{c+c1}{// 也可以用和，但异或可以避免顺序问题}
+\PYG{+w}{        }\PYG{n}{hash\PYGZus{}val}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{n}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{i}\PYG{o}{++}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{hash\PYGZus{}val}\PYG{+w}{ }\PYG{o}{\PYGZca{}=}\PYG{+w}{ }\PYG{n}{rdp}\PYG{p}{[}\PYG{n}{i}\PYG{p}{];}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{calced}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n+nb}{true}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+cm}{/**}
+\PYG{c+cm}{     * @brief 获取以节点 p 为根的有根树哈希值}
+\PYG{c+cm}{     * @param p 节点编号}
+\PYG{c+cm}{     * @return 哈希值}
+\PYG{c+cm}{     */}
+\PYG{+w}{    }\PYG{n}{ull}\PYG{+w}{ }\PYG{n}{rooted\PYGZus{}hash}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{assert}\PYG{p}{(}\PYG{n}{calced}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}calc() must be called before getting hash values.\PYGZdq{}}\PYG{p}{);}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{rdp}\PYG{p}{[}\PYG{n}{p}\PYG{p}{];}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{c+cm}{/**}
+\PYG{c+cm}{     * @brief 获取无根树的哈希值}
+\PYG{c+cm}{     * @return 哈希值}
+\PYG{c+cm}{     */}
+\PYG{+w}{    }\PYG{n}{ull}\PYG{+w}{ }\PYG{n}{unrooted\PYGZus{}hash}\PYG{p}{()}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{assert}\PYG{p}{(}\PYG{n}{calced}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{l+s}{\PYGZdq{}calc() must be called before getting hash values.\PYGZdq{}}\PYG{p}{);}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{hash\PYGZus{}val}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{};}
+
+\PYG{c+c1}{// 初始化静态成员}
+\PYG{n}{mt19937\PYGZus{}64}\PYG{+w}{ }\PYG{n+nf}{tree\PYGZus{}hash::rng}\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{chrono}\PYG{o}{::}\PYG{n}{steady\PYGZus{}clock}\PYG{o}{::}\PYG{n}{now}\PYG{p}{().}\PYG{n}{time\PYGZus{}since\PYGZus{}epoch}\PYG{p}{().}\PYG{n}{count}\PYG{p}{());}
+\PYG{n}{map}\PYG{o}{\PYGZlt{}}\PYG{n}{ull}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ull}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{tree\PYGZus{}hash}\PYG{o}{::}\PYG{n}{mp}\PYG{p}{;}
+\end{Verbatim}

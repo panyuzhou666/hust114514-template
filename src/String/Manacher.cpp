@@ -1,11 +1,21 @@
-// n为串长, 回文半径输出到p数组中，数组要开串长的两倍
-void manacher(const char *t, int n) {
-	static char s[MAXN * 2];
-	for (int i = n; i; i--) s[i * 2] = t[i];
-	for (int i = 0; i <= n; i++) s[i * 2 + 1] = '#';
-	s[0] = '$'; s[(n + 1) * 2] = '\0'; n = n * 2 + 1;
-	int mx = 0, j = 0;
-	for (int i = 1; i <= n; i++) {
-		p[i] = (mx > i ? min(p[j * 2 - i], mx - i) : 1);
-		while (s[i - p[i]] == s[i + p[i]]) p[i]++;
-		if (i + p[i] > mx) { mx = i + p[i]; j = i; } } }
+vector<int> manacher(string& s) {
+	//用 '#' 分割字符
+    string t = "#";
+    for (auto c : s) {
+        t += c;
+        t += '#';
+    }
+    int n = t.size();
+    vector<int> r(n);//回文半径
+    for (int i = 0, j = 0; i < n; i++) {
+        if (2 * j - i >= 0 && j + r[j] > i) {
+            r[i] = min(r[2 * j - i], j + r[j] - i);
+        }
+        while (i - r[i] >= 0 && i + r[i] < n && t[i - r[i]] == t[i + r[i]]) r[i]++;
+
+        if (i + r[i] > j + r[j]) {
+            j = i;
+        }
+    }
+    return r;
+}

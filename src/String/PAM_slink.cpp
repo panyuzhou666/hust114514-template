@@ -1,14 +1,16 @@
+//使用slink指针来优化转移为回文子串的dp
 constexpr int ALPHA_SIZE = 26;
 struct PAM
 {
     struct Node{
-        array<int,ALPHA_SIZE>next;//可以换成map
-        int dep;//回文树上深度 / *当前*以这个点结尾的回文后缀个数
-        int len;//回文长度
-        int cnt;//作为最长回文后缀的次数，调用calc_cnt后变成该回文子串数量
-        int fail;//指向最长回文真后缀
-        int trans;//长度小于等于自身一半的最长回文后缀
-        Node():next{},dep{},len{},cnt{1},fail{},trans{}{}
+        array<int,ALPHA_SIZE>next;
+        int dep;
+        int len;
+        int cnt;
+        int fail;//lps
+        int diff;//与lps的长度之差
+        int slink;//指向第一个diff不等于自身的回文后缀
+        Node():next{},dep{},len{},cnt{1},fail{},diff{},slink{}{}
     };
 
     static constexpr int odd_root = 0;
@@ -37,6 +39,7 @@ struct PAM
     {
         t.assign(2,Node());
         t[0].len = -1;
+        t[1].diff = 1;
         suff = 1;
         s.clear();
     }
@@ -69,15 +72,17 @@ struct PAM
         t[cur].next[x] = p;
         if(t[p].len == 1){//trans form odd_root
             t[p].fail = even_root;//even root
-            t[p].trans = even_root;
             t[p].dep = 1;
+            t[p].diff = 1;
+            t[p].slink = 1;//even_root
             return true;
         }
         int f = get_fail(t[cur].fail);// find new fail begin at lps(cur)
         t[p].fail = t[f].next[x];
-        int tf = get_trans(t[cur].trans, t[p].len);
-        t[p].trans = t[tf].next[x];
         t[p].dep = t[t[p].fail].dep + 1;
+        t[p].diff = t[p].len - t[t[p].fail].len;
+        if(t[p].diff == t[t[p].fail].diff)t[p].slink = t[t[p].fail].slink;
+        else t[p].slink = t[p].fail;
         return true;
     }
 
@@ -89,18 +94,4 @@ struct PAM
         return p;
     }
 
-    int get_trans(int p, int plen)
-    {
-        int len = s.length() - 1;
-        //(t[p].len + 2) * 2 < plen
-        while(t[p].len * 2 > plen - 4 || len - t[p].len - 1 < 0 || s[len] != s[len - t[p].len - 1])p = t[p].fail; 
-        return p;
-    }
-
-    void calc_cnt()
-    {
-        for(int i = t.size() - 1;i > 1;i--){
-            t[t[i].fail].cnt += t[i].cnt;
-        }
-    }
 };
