@@ -1,0 +1,99 @@
+\begin{MintedVerbatim}[commandchars=\\\{\},codes={\catcode`\$=3\catcode`\^=7\catcode`\_=8\relax}]
+\PYG{c+c1}{//使用slink指针来优化转移为回文子串的dp}
+\PYG{k}{constexpr}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{ALPHA\PYGZus{}SIZE}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{26}\PYG{p}{;}
+\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{PAM}
+\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{struct}\PYG{+w}{ }\PYG{n+nc}{Node}\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{array}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{n}{ALPHA\PYGZus{}SIZE}\PYG{o}{\PYGZgt{}}\PYG{n}{next}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{dep}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{len}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{cnt}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{fail}\PYG{p}{;}\PYG{c+c1}{//lps}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{diff}\PYG{p}{;}\PYG{c+c1}{//与lps的长度之差}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{slink}\PYG{p}{;}\PYG{c+c1}{//指向第一个diff不等于自身的回文后缀}
+\PYG{+w}{        }\PYG{n}{Node}\PYG{p}{()}\PYG{o}{:}\PYG{n}{next}\PYG{p}{\PYGZob{}\PYGZcb{},}\PYG{n}{dep}\PYG{p}{\PYGZob{}\PYGZcb{},}\PYG{n}{len}\PYG{p}{\PYGZob{}\PYGZcb{},}\PYG{n}{cnt}\PYG{p}{\PYGZob{}}\PYG{l+m+mi}{1}\PYG{p}{\PYGZcb{},}\PYG{n}{fail}\PYG{p}{\PYGZob{}\PYGZcb{},}\PYG{n}{diff}\PYG{p}{\PYGZob{}\PYGZcb{},}\PYG{n}{slink}\PYG{p}{\PYGZob{}\PYGZcb{}\PYGZob{}\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{};}
+
+\PYG{+w}{    }\PYG{k}{static}\PYG{+w}{ }\PYG{k}{constexpr}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{odd\PYGZus{}root}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{static}\PYG{+w}{ }\PYG{k}{constexpr}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{even\PYGZus{}root}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{    }\PYG{c+c1}{//odd root \PYGZhy{}\PYGZgt{} 0}
+\PYG{+w}{    }\PYG{c+c1}{//even root \PYGZhy{}\PYGZgt{} 1}
+
+\PYG{+w}{    }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{Node}\PYG{o}{\PYGZgt{}}\PYG{n}{t}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{suff}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{string}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{;}
+
+\PYG{+w}{    }\PYG{n}{PAM}\PYG{p}{()}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{init}\PYG{p}{();}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{n}{PAM}\PYG{p}{(}\PYG{n}{string}\PYG{+w}{ }\PYG{o}{\PYGZam{}}\PYG{n}{s}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{init}\PYG{p}{();}
+\PYG{+w}{        }\PYG{k}{for}\PYG{p}{(}\PYG{k}{auto}\PYG{+w}{ }\PYG{n}{ch}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{)\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{add}\PYG{p}{(}\PYG{n}{ch}\PYG{p}{);}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{init}\PYG{p}{()}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{t}\PYG{p}{.}\PYG{n}{assign}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{n}{Node}\PYG{p}{());}
+\PYG{+w}{        }\PYG{n}{t}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{].}\PYG{n}{len}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{t}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{].}\PYG{n}{diff}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{suff}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{s}\PYG{p}{.}\PYG{n}{clear}\PYG{p}{();}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{newNode}\PYG{p}{()}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{t}\PYG{p}{.}\PYG{n}{emplace\PYGZus{}back}\PYG{p}{();}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{.}\PYG{n}{size}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k}{constexpr}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{num}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{k+kt}{char}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{)}\PYG{k}{noexcept}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{c}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+s+sc}{\PYGZsq{}a\PYGZsq{}}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{};}
+
+\PYG{+w}{    }\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{n+nf}{add}\PYG{p}{(}\PYG{k+kt}{char}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{s}\PYG{+w}{ }\PYG{o}{+=}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{x}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{num}\PYG{p}{(}\PYG{n}{c}\PYG{p}{);}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{cur}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{get\PYGZus{}fail}\PYG{p}{(}\PYG{n}{suff}\PYG{p}{);}
+\PYG{+w}{        }\PYG{k}{if}\PYG{p}{(}\PYG{n}{t}\PYG{p}{[}\PYG{n}{cur}\PYG{p}{].}\PYG{n}{next}\PYG{p}{[}\PYG{n}{x}\PYG{p}{])\PYGZob{}}\PYG{c+c1}{//exist}
+\PYG{+w}{            }\PYG{n}{suff}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{cur}\PYG{p}{].}\PYG{n}{next}\PYG{p}{[}\PYG{n}{x}\PYG{p}{];}
+\PYG{+w}{            }\PYG{n}{t}\PYG{p}{[}\PYG{n}{suff}\PYG{p}{].}\PYG{n}{cnt}\PYG{o}{++}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{false}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{p}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{newNode}\PYG{p}{();}
+\PYG{+w}{        }\PYG{n}{suff}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{;}\PYG{c+c1}{//new longest palindrome suffix }
+\PYG{+w}{        }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{len}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{cur}\PYG{p}{].}\PYG{n}{len}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{t}\PYG{p}{[}\PYG{n}{cur}\PYG{p}{].}\PYG{n}{next}\PYG{p}{[}\PYG{n}{x}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{if}\PYG{p}{(}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{len}\PYG{+w}{ }\PYG{o}{==}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{)\PYGZob{}}\PYG{c+c1}{//trans form odd\PYGZus{}root}
+\PYG{+w}{            }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{fail}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{even\PYGZus{}root}\PYG{p}{;}\PYG{c+c1}{//even root}
+\PYG{+w}{            }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{dep}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{diff}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{            }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{slink}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}\PYG{c+c1}{//even\PYGZus{}root}
+\PYG{+w}{            }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{true}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{f}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{get\PYGZus{}fail}\PYG{p}{(}\PYG{n}{t}\PYG{p}{[}\PYG{n}{cur}\PYG{p}{].}\PYG{n}{fail}\PYG{p}{);}\PYG{c+c1}{// find new fail begin at lps(cur)}
+\PYG{+w}{        }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{fail}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{f}\PYG{p}{].}\PYG{n}{next}\PYG{p}{[}\PYG{n}{x}\PYG{p}{];}
+\PYG{+w}{        }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{dep}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{fail}\PYG{p}{].}\PYG{n}{dep}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{diff}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{len}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{fail}\PYG{p}{].}\PYG{n}{len}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{if}\PYG{p}{(}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{diff}\PYG{+w}{ }\PYG{o}{==}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{fail}\PYG{p}{].}\PYG{n}{diff}\PYG{p}{)}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{slink}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{fail}\PYG{p}{].}\PYG{n}{slink}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{else}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{slink}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{fail}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n+nb}{true}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n+nf}{get\PYGZus{}fail}\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{)}
+\PYG{+w}{    }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{c+c1}{// if p == odd\PYGZus{}root \PYGZhy{}\PYGZgt{} len = \PYGZhy{}1, ok}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{len}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{.}\PYG{n}{length}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{while}\PYG{p}{(}\PYG{n}{len}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{len}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{||}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{[}\PYG{n}{len}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{!=}\PYG{+w}{ }\PYG{n}{s}\PYG{p}{[}\PYG{n}{len}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{len}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{])}\PYG{n}{p}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{[}\PYG{n}{p}\PYG{p}{].}\PYG{n}{fail}\PYG{p}{;}\PYG{+w}{ }
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{p}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+
+\PYG{p}{\PYGZcb{};}
+\end{MintedVerbatim}
